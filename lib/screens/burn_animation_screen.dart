@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'dart:math' as math;
 
 class BurnAnimationScreen extends StatelessWidget {
@@ -41,8 +42,9 @@ class BurnGame extends FlameGame {
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    
-    // 종이 컴포넌트 추가
+    // 사운드 효과 재생
+    final player = AudioPlayer();
+    await player.play(AssetSource('sounds/burn.mp3'));
     final paper = PaperComponent(
       emotion: emotion,
       text: text,
@@ -50,8 +52,6 @@ class BurnGame extends FlameGame {
       onBurnComplete: onBurnComplete,
     );
     add(paper);
-
-    // 불꽃 파티클 추가
     final fireParticles = FireParticleComponent(
       position: Vector2(size.x / 2, size.y / 2),
     );
