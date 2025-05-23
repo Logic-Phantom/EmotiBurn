@@ -19,7 +19,13 @@ class BurnAnimationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       body: GameWidget(
-        game: BurnGame(emotion: emotion, text: text),
+        game: BurnGame(
+          emotion: emotion,
+          text: text,
+          onBurnComplete: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+        ),
       ),
     );
   }
@@ -28,8 +34,9 @@ class BurnAnimationScreen extends StatelessWidget {
 class BurnGame extends FlameGame {
   final String emotion;
   final String text;
+  final VoidCallback onBurnComplete;
 
-  BurnGame({required this.emotion, required this.text});
+  BurnGame({required this.emotion, required this.text, required this.onBurnComplete});
 
   @override
   Future<void> onLoad() async {
@@ -40,6 +47,7 @@ class BurnGame extends FlameGame {
       emotion: emotion,
       text: text,
       position: Vector2(size.x / 2, size.y / 2),
+      onBurnComplete: onBurnComplete,
     );
     add(paper);
 
@@ -54,6 +62,7 @@ class BurnGame extends FlameGame {
 class PaperComponent extends PositionComponent {
   final String emotion;
   final String text;
+  final VoidCallback onBurnComplete;
   late final TextComponent emotionText;
   late final TextComponent contentText;
 
@@ -61,6 +70,7 @@ class PaperComponent extends PositionComponent {
     required this.emotion,
     required this.text,
     required Vector2 position,
+    required this.onBurnComplete,
   }) : super(position: position, size: Vector2(200, 300));
 
   @override
@@ -117,7 +127,7 @@ class PaperComponent extends PositionComponent {
           ),
         ],
         onComplete: () {
-          removeFromParent();
+          onBurnComplete();
         },
       ),
     );
