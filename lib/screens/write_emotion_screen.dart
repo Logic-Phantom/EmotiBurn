@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'burn_animation_screen.dart';
 
 class WriteEmotionScreen extends StatefulWidget {
   const WriteEmotionScreen({super.key});
@@ -35,8 +36,16 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> {
       );
       return;
     }
-    // TODO: 불타는 애니메이션 화면으로 이동
-    Navigator.pop(context);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BurnAnimationScreen(
+          emotion: _selectedEmotion,
+          text: _textController.text,
+        ),
+      ),
+    );
   }
 
   @override
