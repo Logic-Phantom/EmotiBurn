@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'screens/write_emotion_screen.dart';
 
 void main() {
   runApp(const EmotiBurnApp());
@@ -48,9 +49,22 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // TODO: 감정 작성 화면으로 이동
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const WriteEmotionScreen(),
+                  ),
+                );
               },
-              child: const Text('감정 버리기'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              ),
+              child: const Text(
+                '감정 버리기',
+                style: TextStyle(fontSize: 18),
+              ),
             ),
           ],
         ),
