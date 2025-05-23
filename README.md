@@ -1,72 +1,112 @@
-# EmotiBurn - 마음의 쓰레기통
+# EmotiBurn - 감정 해소를 위한 정신 건강 앱
 
-감정을 버리는 행위 자체를 UX로 만든 감정 해방 앱
+## 프로젝트 소개
+EmotiBurn은 감정 해소와 정신 건강 관리를 위한 Flutter 기반 모바일 애플리케이션입니다.
 
-## 프로젝트 개요
-
-사람들은 불안, 분노, 슬픔 같은 감정을 어디에도 말하지 못해 쌓아둡니다. 이 앱은 "감정을 버리는 행위 자체"를 UX로 만듭니다.
+## 개발 환경
+- Flutter SDK: >=3.0.0 <4.0.0
+- Android SDK: 35
+- Kotlin
+- Gradle
 
 ## 주요 기능
+- 로컬 알림
+- 데이터 저장
+- 게임 엔진 통합
+- 상태 관리
+- 커스텀 폰트
+- 애니메이션
+- 오디오 재생
 
-- 감정을 글로 작성한 후 "버리기" 버튼으로 삭제
-- 버릴 때 종이가 타는 애니메이션 효과 및 사운드 효과
-- 버려진 감정은 저장되지 않음 (기억 대신 해주는 앱)
-- 주기적으로 "지금 마음은 괜찮나요?" 푸시 알림
-- 감정 데이터는 저장하지 않음, 완전한 해방 UX
+## 의존성 패키지
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  flutter_local_notifications: ^17.0.0
+  shared_preferences: ^2.2.2
+  flame: ^1.14.0
+  provider: ^6.1.1
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.5.0
+  audioplayers: ^5.2.1
+```
 
-## 기술 스택
+## 빌드 과정 및 시행착오
 
-- Flutter
-- Dart
-- Provider (상태 관리)
-- Flame (게임 엔진, 애니메이션)
-- Flutter Local Notifications (푸시 알림)
-- audioplayers (사운드 효과)
+### 1. 릴리즈 빌드 설정
+#### 키스토어 생성
+```powershell
+cd android/app
+keytool -genkey -v -keystore release.keystore -alias emotiburn -keyalg RSA -keysize 2048 -validity 10000
+```
+- 키스토어 비밀번호 설정 필요
+- 조직 정보 입력 (CN, OU, O, L, ST, C)
+
+#### build.gradle.kts 설정
+```kotlin
+signingConfigs {
+    create("release") {
+        storeFile = file("release.keystore")
+        storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "your_keystore_password"
+        keyAlias = "emotiburn"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: "your_key_password"
+    }
+}
+```
+
+### 2. 환경 변수 설정
+```powershell
+$env:KEYSTORE_PASSWORD="your_keystore_password"
+$env:KEY_PASSWORD="your_key_password"
+```
+
+### 3. 릴리즈 빌드 실행
+```powershell
+flutter build apk --release
+```
+
+### 4. APK 파일 위치
+- `android/app/build/outputs/apk/release/app-release.apk`
+
+## APK 설치 방법
+
+### 1. APK 파일 전송
+- USB 케이블 연결
+- 이메일 전송
+- 구글 드라이브 업로드
+- 메신저 전송
+
+### 2. 안드로이드 기기에서 설치
+1. 파일 관리자 실행
+2. APK 파일 위치로 이동
+3. `app-release.apk` 파일 탭
+4. "설치" 버튼 클릭
+5. "알 수 없는 출처" 설치 허용
+   - "설정" 클릭
+   - "알 수 없는 출처" 또는 "이 출처 허용" 활성화
+6. 설치 완료
+
+## 주의사항
+- 키스토어 파일과 비밀번호는 안전하게 보관
+- 키스토어 파일 분실 시 앱 업데이트 불가능
+- 비밀번호는 소스코드에 직접 입력하지 않기
+- 환경 변수 사용 권장
 
 ## 프로젝트 구조
-
 ```
-EmotiBurn/
-├── lib/
-│   ├── main.dart          # 앱의 진입점
-│   ├── screens/           # 화면 위젯
-│   ├── widgets/           # 재사용 가능한 위젯
-│   ├── models/            # 데이터 모델
-│   └── services/          # 비즈니스 로직
-├── assets/
-│   ├── images/           # 이미지 리소스
-│   ├── animations/       # 애니메이션 리소스
-│   └── sounds/           # 사운드 리소스 (burn.mp3 등)
-└── pubspec.yaml          # 프로젝트 설정 및 의존성
+assets/
+  ├── images/
+  └── animations/
+lib/
+  ├── main.dart
+  └── ...
+android/
+  └── app/
+      ├── build.gradle.kts
+      └── release.keystore
 ```
 
-## 개발 현황
-
-### 2024-03-21
-- 프로젝트 초기 설정
-- 기본 프로젝트 구조 생성
-- 메인 화면 UI 구현
-- 다크 모드 테마 적용
-- 감정 작성 화면 구현
-- 감정 버리기 애니메이션 및 사운드 효과 구현
-- 주기적 푸시 알림 기능 추가
-- 감정 데이터 저장 없이 UX 마무리
-
-## 설치 및 실행
-
-1. Flutter SDK 설치
-2. 프로젝트 클론
-```bash
-git clone https://github.com/Logic-Phantom/EmotiBurn.git
-```
-3. 의존성 설치
-```bash
-flutter pub get
-```
-4. 앱 실행
-```bash
-flutter run
-```
-
-### 사운드 파일 안내
-- `assets/sounds/burn.mp3` 파일을 직접 추가해야 합니다. (저작권 없는 효과음 추천) 
+## 라이선스
+이 프로젝트는 MIT 라이선스 하에 배포됩니다. 
