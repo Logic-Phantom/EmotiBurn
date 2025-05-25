@@ -1,112 +1,91 @@
-# EmotiBurn - 감정 해소를 위한 정신 건강 앱
+# EmotiBurn
 
-## 프로젝트 소개
-EmotiBurn은 감정 해소와 정신 건강 관리를 위한 Flutter 기반 모바일 애플리케이션입니다.
-
-## 개발 환경
-- Flutter SDK: >=3.0.0 <4.0.0
-- Android SDK: 35
-- Kotlin
-- Gradle
+EmotiBurn은 사용자의 감정 상태를 분석하고 이를 바탕으로 맞춤형 운동 추천을 제공하는 웹 애플리케이션입니다.
 
 ## 주요 기능
-- 로컬 알림
-- 데이터 저장
-- 게임 엔진 통합
-- 상태 관리
-- 커스텀 폰트
-- 애니메이션
-- 오디오 재생
 
-## 의존성 패키지
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.2
-  flutter_local_notifications: ^17.0.0
-  shared_preferences: ^2.2.2
-  flame: ^1.14.0
-  provider: ^6.1.1
-  google_fonts: ^6.1.0
-  flutter_animate: ^4.5.0
-  audioplayers: ^5.2.1
-```
+- 감정 상태 분석 및 기록
+- 맞춤형 운동 추천
+- 운동 일지 작성 및 관리
+- 운동 통계 및 분석
+- 커뮤니티 기능
 
-## 빌드 과정 및 시행착오
+## 기술 스택
 
-### 1. 릴리즈 빌드 설정
-#### 키스토어 생성
-```powershell
-cd android/app
-keytool -genkey -v -keystore release.keystore -alias emotiburn -keyalg RSA -keysize 2048 -validity 10000
-```
-- 키스토어 비밀번호 설정 필요
-- 조직 정보 입력 (CN, OU, O, L, ST, C)
-
-#### build.gradle.kts 설정
-```kotlin
-signingConfigs {
-    create("release") {
-        storeFile = file("release.keystore")
-        storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "your_keystore_password"
-        keyAlias = "emotiburn"
-        keyPassword = System.getenv("KEY_PASSWORD") ?: "your_key_password"
-    }
-}
-```
-
-### 2. 환경 변수 설정
-```powershell
-$env:KEYSTORE_PASSWORD="your_keystore_password"
-$env:KEY_PASSWORD="your_key_password"
-```
-
-### 3. 릴리즈 빌드 실행
-```powershell
-flutter build apk --release
-```
-
-### 4. APK 파일 위치
-- `android/app/build/outputs/apk/release/app-release.apk`
-
-## APK 설치 방법
-
-### 1. APK 파일 전송
-- USB 케이블 연결
-- 이메일 전송
-- 구글 드라이브 업로드
-- 메신저 전송
-
-### 2. 안드로이드 기기에서 설치
-1. 파일 관리자 실행
-2. APK 파일 위치로 이동
-3. `app-release.apk` 파일 탭
-4. "설치" 버튼 클릭
-5. "알 수 없는 출처" 설치 허용
-   - "설정" 클릭
-   - "알 수 없는 출처" 또는 "이 출처 허용" 활성화
-6. 설치 완료
-
-## 주의사항
-- 키스토어 파일과 비밀번호는 안전하게 보관
-- 키스토어 파일 분실 시 앱 업데이트 불가능
-- 비밀번호는 소스코드에 직접 입력하지 않기
-- 환경 변수 사용 권장
+- Frontend: React.js
+- Backend: Node.js, Express.js
+- Database: MongoDB
+- AI/ML: TensorFlow.js (감정 분석)
+- Authentication: JWT
 
 ## 프로젝트 구조
+
 ```
-assets/
-  ├── images/
-  └── animations/
-lib/
-  ├── main.dart
-  └── ...
-android/
-  └── app/
-      ├── build.gradle.kts
-      └── release.keystore
+EmotiBurn/
+├── client/                 # Frontend React 애플리케이션
+│   ├── public/            # 정적 파일
+│   └── src/               # 소스 코드
+│       ├── components/    # React 컴포넌트
+│       ├── pages/        # 페이지 컴포넌트
+│       ├── services/     # API 서비스
+│       └── utils/        # 유틸리티 함수
+├── server/                # Backend 서버
+│   ├── config/           # 설정 파일
+│   ├── controllers/      # 컨트롤러
+│   ├── models/          # 데이터 모델
+│   ├── routes/          # API 라우트
+│   └── utils/           # 유틸리티 함수
+└── docs/                 # 문서
 ```
 
+## 시작하기
+
+### 필수 요구사항
+
+- Node.js (v14 이상)
+- MongoDB
+- npm 또는 yarn
+
+### 설치 및 실행
+
+1. 저장소 클론
+```bash
+git clone https://github.com/yourusername/EmotiBurn.git
+cd EmotiBurn
+```
+
+2. Frontend 의존성 설치 및 실행
+```bash
+cd client
+npm install
+npm start
+```
+
+3. Backend 의존성 설치 및 실행
+```bash
+cd server
+npm install
+npm start
+```
+
+## API 문서
+
+API 문서는 `/docs/api.md`에서 확인할 수 있습니다.
+
+## 기여하기
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
 ## 라이선스
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
+
+## 연락처
+
+프로젝트 관리자 - [이메일 주소]
+
+프로젝트 링크: [https://github.com/yourusername/EmotiBurn](https://github.com/yourusername/EmotiBurn) 
