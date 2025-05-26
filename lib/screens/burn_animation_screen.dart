@@ -56,10 +56,10 @@ class BurnAnimationGame extends FlameGame {
     
     // 편지지 배경 (화면 중앙에 고정)
     final bgSprite = await loadSprite('letter_bg.png');
-    final bgWidth = size.x * 0.85;
-    final bgHeight = size.y * 0.75;
-    final bgX = (size.x - bgWidth) / 2;
-    final bgY = (size.y - bgHeight) / 2;
+    final bgWidth = size.x;
+    final bgHeight = size.y;
+    final bgX = 0.0;
+    final bgY = 0.0;
     
     letterBg = SpriteComponent(
       sprite: bgSprite,
@@ -82,7 +82,7 @@ class BurnAnimationGame extends FlameGame {
         ),
       ),
       anchor: Anchor.center,
-      position: Vector2(bgX + bgWidth/2, bgY + bgHeight/2),
+      position: Vector2(bgWidth/2, bgHeight/2),
       priority: 2,
     );
     add(contentText);
@@ -91,7 +91,7 @@ class BurnAnimationGame extends FlameGame {
     fireEmojis = List.generate(8, (index) {
       final x = bgX + (bgWidth * (index + 1) / 9);
       final emoji = FireEmojiComponent(
-        position: Vector2(x, bgY),
+        position: Vector2(x, bgY + bgHeight - 32),
         gameSize: size,
       );
       add(emoji);
@@ -109,7 +109,7 @@ class BurnAnimationGame extends FlameGame {
     // 불꽃 파티클 효과
     fireParticles = List.generate(20, (index) {
       final x = bgX + random.nextDouble() * bgWidth;
-      final y = bgY + random.nextDouble() * 20; // 상단에 집중
+      final y = bgY + bgHeight - 20 - random.nextDouble() * 20;
       final particle = FireParticleComponent(
         position: Vector2(x, y),
         gameSize: size,
@@ -236,23 +236,22 @@ class LetterBurnMaskComponent extends PositionComponent {
     if (progress <= 0) return;
 
     final maskHeight = rect.height * progress;
-    final maskTop = rect.top;
+    final maskBottom = rect.bottom;
     
     // 불규칙한 경계 생성
     final path = Path();
-    path.moveTo(rect.left, maskTop);
+    path.moveTo(rect.left, maskBottom);
     
     final steps = 40;
     for (int i = 0; i <= steps; i++) {
       final x = rect.left + rect.width * (i / steps);
       final noise = sin(i * 0.5 + progress * 10) * 8 * (0.7 + random.nextDouble() * 0.6);
-      final y = maskTop + maskHeight - 8 + noise;
+      final y = maskBottom - maskHeight + 8 + noise;
       path.lineTo(x, y);
     }
     
-    path.lineTo(rect.right, maskTop);
-    path.lineTo(rect.right, maskTop + maskHeight);
-    path.lineTo(rect.left, maskTop + maskHeight);
+    path.lineTo(rect.right, maskBottom);
+    path.lineTo(rect.left, maskBottom);
     path.close();
 
     // 불에 탄 효과 (그라데이션)
@@ -266,7 +265,7 @@ class LetterBurnMaskComponent extends PositionComponent {
           Colors.black.withOpacity(0.5),
         ],
         stops: const [0.0, 0.5, 1.0],
-      ).createShader(Rect.fromLTWH(rect.left, maskTop, rect.width, maskHeight))
+      ).createShader(Rect.fromLTWH(rect.left, rect.top, rect.width, maskHeight))
       ..blendMode = BlendMode.srcOver;
     
     canvas.drawPath(path, paint);

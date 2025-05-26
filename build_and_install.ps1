@@ -1,4 +1,9 @@
 # Flutter 앱 빌드 및 설치 자동화 스크립트
+# Flutter 앱 빌드 및 설치 자동화 스크립트
+# 콘솔 인코딩 설정 (PowerShell, Windows에서 한글 깨짐 방지)
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[Console]::OutputEncoding = $utf8NoBom
+$OutputEncoding = $utf8NoBom
 
 # 오류 발생 시 스크립트 중단
 $ErrorActionPreference = "Continue"
