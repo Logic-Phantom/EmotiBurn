@@ -1,60 +1,60 @@
-# Flutter 앱 빌드 및 설치 자동화 스크립트
+# Flutter App Build and Install Automation Script
 # -----------------------------------------------
-# Flutter 앱 빌드 및 설치 자동화 스크립트 (UTF-8 인코딩 대응)
+# Flutter App Build and Install Automation Script (UTF-8 Encoding Support)
 # -----------------------------------------------
 
-# 콘솔 인코딩 설정 (한글 깨짐 방지)
+# Set console encoding (Prevent Korean character corruption)
 $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
-chcp 65001 | Out-Null  # 콘솔 코드 페이지를 UTF-8로 설정
+chcp 65001 | Out-Null  # Set console code page to UTF-8
 
-# 오류 발생 시 스크립트 중단
+# Stop script on error
 $ErrorActionPreference = "Continue"
 
-Write-Host "🚀 Flutter 앱 빌드 및 설치 시작..." -ForegroundColor Green
+Write-Host "🚀 Starting Flutter app build and installation..." -ForegroundColor Green
 
-# Flutter 클린
-Write-Host "🧹 Flutter 클린 실행 중..." -ForegroundColor Yellow
+# Flutter clean
+Write-Host "🧹 Running Flutter clean..." -ForegroundColor Yellow
 flutter clean
 
-# Flutter pub get
-Write-Host "📦 의존성 패키지 설치 중..." -ForegroundColor Yellow
+# Install dependencies
+Write-Host "📦 Installing dependencies..." -ForegroundColor Yellow
 flutter pub get
 
-# Gradle을 사용하여 직접 빌드
-Write-Host "🔨 Gradle 빌드 실행 중..." -ForegroundColor Yellow
+# Build using Gradle directly
+Write-Host "🔨 Running Gradle build..." -ForegroundColor Yellow
 try {
     Set-Location android
     ./gradlew assembleDebug --info
     Set-Location ..
 } catch {
-    Write-Host "❌ Gradle 빌드 실패!" -ForegroundColor Red
+    Write-Host "❌ Gradle build failed!" -ForegroundColor Red
     Write-Host $_
     exit 1
 }
 
-# APK 파일 경로 (가장 최근 생성된 APK 자동 탐색)
+# APK path (automatically find the most recently generated APK)
 $apkPath = Get-ChildItem -Path . -Recurse -Filter *.apk | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName
 
 if ($apkPath -and (Test-Path $apkPath)) {
-    Write-Host "✅ APK 빌드 성공! 위치: $apkPath" -ForegroundColor Green
+    Write-Host "✅ APK build succeeded! Location: $apkPath" -ForegroundColor Green
     
-    Write-Host "📱 연결된 기기 확인 중..." -ForegroundColor Yellow
+    Write-Host "📱 Checking connected devices..." -ForegroundColor Yellow
     $devices = flutter devices
     Write-Host $devices
     
     if ($devices -match "android") {
-        Write-Host "📱 앱 설치 중..." -ForegroundColor Yellow
+        Write-Host "📱 Installing app..." -ForegroundColor Yellow
         adb install -r $apkPath
-        Write-Host "✅ 앱 설치 완료!" -ForegroundColor Green
+        Write-Host "✅ App installation complete!" -ForegroundColor Green
     } else {
-        Write-Host "❌ 연결된 Android 기기가 없습니다." -ForegroundColor Red
+        Write-Host "❌ No connected Android device found." -ForegroundColor Red
     }
 } else {
-    Write-Host "❌ APK 파일을 찾을 수 없습니다!" -ForegroundColor Red
-    Write-Host "🔍 Gradle 빌드 로그를 확인하세요." -ForegroundColor Yellow
+    Write-Host "❌ Could not find APK file!" -ForegroundColor Red
+    Write-Host "🔍 Check Gradle build logs for more info." -ForegroundColor Yellow
     exit 1
 }
 
-Write-Host "✨ 작업 완료!" -ForegroundColor Green 
+Write-Host "✨ All done!" -ForegroundColor Green
