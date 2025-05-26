@@ -44,6 +44,10 @@ class BurnAnimationGame extends FlameGame {
   bool _isFading = false;
   double _burnProgress = 0.0;
   bool _ashStarted = false;
+  bool _showMessage = false;
+  String _message = "모든 감정은 잠시뿐, 당신은 더 강해질 거예요.";
+  double _messageOpacity = 0.0;
+  double _messageY = 0.0;
 
   BurnAnimationGame({
     required this.text,
@@ -156,8 +160,22 @@ class BurnAnimationGame extends FlameGame {
           add(particle);
           return particle;
         });
-        // 1초 후 홈으로 이동
-        Future.delayed(const Duration(seconds: 1), onComplete);
+        // 1초 후 메시지 표시
+        Future.delayed(const Duration(seconds: 1), () {
+          _showMessage = true;
+          _messageY = size.y / 2;
+          _messageOpacity = 0.0;
+        });
+      }
+    }
+
+    // 메시지 애니메이션
+    if (_showMessage) {
+      _messageOpacity += dt;
+      if (_messageOpacity >= 1.0) {
+        _messageOpacity = 1.0;
+        // 2초 후 홈으로 이동
+        Future.delayed(const Duration(seconds: 2), onComplete);
       }
     }
   }
@@ -180,6 +198,29 @@ class BurnAnimationGame extends FlameGame {
       paint,
     );
     super.render(canvas);
+
+    // 메시지 렌더링
+    if (_showMessage) {
+      // 검은색 배경
+      final bgPaint = Paint()..color = Colors.black;
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.x, size.y),
+        bgPaint,
+      );
+
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: _message,
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white.withOpacity(_messageOpacity),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+      textPainter.paint(canvas, Offset((size.x - textPainter.width) / 2, _messageY));
+    }
   }
 }
 
