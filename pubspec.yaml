@@ -1,3 +1,4 @@
+# encoding: utf-8
 name: emotiburn
 description: "A new Flutter project."
 publish_to: 'none'
@@ -10,13 +11,15 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  flame: ^1.16.0
+  flame: ^1.17.0
   shared_preferences: ^2.2.2
-  intl: ^0.19.0
+  intl: ^0.20.2
   flutter_local_notifications: ^19.2.1
   timezone: ^0.10.1
   flutter_native_splash: ^2.3.10
   flutter_launcher_icons: ^0.13.1
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

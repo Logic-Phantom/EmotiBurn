@@ -43,6 +43,11 @@ class BurnAnimationGame extends FlameGame {
   late List<FireParticleComponent> fireParticles;
   final Random random = Random();
 
+  // 추가: 페이드아웃 관련 변수
+  double _fadeOutTime = 0.0;
+  bool _isFading = false;
+  late ScaleEffect _lastScaleEffect;
+
   BurnAnimationGame({
     required this.emotion,
     required this.text,
@@ -53,7 +58,7 @@ class BurnAnimationGame extends FlameGame {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // 감정 이모지 텍스트
+    // 감정 이모지 텍스트 (TextComponent로 복구)
     emotionText = TextComponent(
       text: emotion,
       textRenderer: TextPaint(
@@ -84,27 +89,30 @@ class BurnAnimationGame extends FlameGame {
     add(contentText);
 
     // 이모지에만 스케일/페이드 효과 적용
+    _lastScaleEffect = ScaleEffect.to(
+      Vector2(1.0, 1.0),
+      EffectController(duration: 0.5, curve: Curves.easeInOut),
+    );
     emotionText.add(
-      SequenceEffect([
-        ScaleEffect.to(
-          Vector2(1.2, 1.2),
-          EffectController(duration: 0.5, curve: Curves.easeOut),
-        ),
-        ScaleEffect.to(
-          Vector2(0.8, 0.8),
-          EffectController(duration: 0.5, curve: Curves.easeIn),
-        ),
-        ScaleEffect.to(
-          Vector2(1.0, 1.0),
-          EffectController(duration: 0.5, curve: Curves.easeInOut),
-        ),
-        OpacityEffect.fadeOut(
-          EffectController(duration: 1.0),
-          onComplete: () {
-            Future.delayed(const Duration(seconds: 1), onComplete);
-          },
-        ),
-      ]),
+      SequenceEffect(
+        [
+          ScaleEffect.to(
+            Vector2(1.2, 1.2),
+            EffectController(duration: 0.5, curve: Curves.easeOut),
+          ),
+          ScaleEffect.to(
+            Vector2(0.8, 0.8),
+            EffectController(duration: 0.5, curve: Curves.easeIn),
+          ),
+          ScaleEffect.to(
+            Vector2(1.0, 1.0),
+            EffectController(duration: 0.5, curve: Curves.easeInOut),
+          ),
+        ],
+        onComplete: () {
+          _isFading = true;
+        },
+      ),
     );
 
     // 불꽃 파티클 효과 추가
@@ -126,6 +134,23 @@ class BurnAnimationGame extends FlameGame {
     super.update(dt);
     for (var particle in fireParticles) {
       particle.update(dt);
+    }
+    if (_isFading) {
+      _fadeOutTime += dt;
+      final newOpacity = (1.0 - (_fadeOutTime / 1.0)).clamp(0.0, 1.0);
+      emotionText.textRenderer = TextPaint(
+        style: const TextStyle(
+          fontSize: 80,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ).copyWith(
+          color: Colors.white.withOpacity(newOpacity),
+        ),
+      );
+      if (_fadeOutTime >= 1.0) {
+        _isFading = false;
+        Future.delayed(const Duration(seconds: 1), onComplete);
+      }
     }
   }
 
