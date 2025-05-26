@@ -1,10 +1,10 @@
 {
   "roots": [
-    "emotiburn"
+    "maeum_trashcan"
   ],
   "packages": [
     {
-      "name": "emotiburn",
+      "name": "maeum_trashcan",
       "version": "1.0.0+1",
       "dependencies": [
         "cupertino_icons",

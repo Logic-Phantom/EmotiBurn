@@ -1,6 +1,6 @@
 # encoding: utf-8
-name: emotiburn
-description: "A new Flutter project."
+name: maeum_trashcan  # 영문 소문자와 밑줄만 사용
+description: "마음 쓰레기통 - 감정을 버리는 공간"
 publish_to: 'none'
 version: 1.0.0+1
 
