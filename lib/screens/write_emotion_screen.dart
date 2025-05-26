@@ -8,9 +8,11 @@ class WriteEmotionScreen extends StatefulWidget {
   State<WriteEmotionScreen> createState() => _WriteEmotionScreenState();
 }
 
-class _WriteEmotionScreenState extends State<WriteEmotionScreen> {
+class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTickerProviderStateMixin {
   final TextEditingController _textController = TextEditingController();
-  String _selectedEmotion = '😢'; // 기본값: 슬픔
+  String _selectedEmotion = '😢';
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
 
   final List<String> _emotions = [
     '😢', // 슬픔
@@ -24,28 +26,54 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
   void dispose() {
     _textController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
   void _burnEmotion() {
     if (_textController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('감정을 작성해주세요')),
+        const SnackBar(
+          content: Text('감정을 작성해주세요'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+        ),
       );
       return;
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BurnAnimationScreen(
-          emotion: _selectedEmotion,
-          text: _textController.text,
+    _animationController.forward().then((_) {
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => BurnAnimationScreen(
+            emotion: _selectedEmotion,
+            text: _textController.text,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 500),
         ),
-      ),
-    );
+      );
+    });
   }
 
   @override
@@ -54,87 +82,146 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> {
       appBar: AppBar(
         title: const Text('감정 버리기'),
         centerTitle: true,
+        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text(
-              '지금 어떤 감정이 드나요?',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              height: 100,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  childAspectRatio: 1,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              Colors.white,
+            ],
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                '지금 어떤 감정이 드나요?',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
-                itemCount: _emotions.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedEmotion = _emotions[index];
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: _selectedEmotion == _emotions[index]
-                            ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
-                            : null,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          _emotions[index],
-                          style: const TextStyle(fontSize: 24),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(8),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: 1,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: _emotions.length,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedEmotion = _emotions[index];
+                        });
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
+                          color: _selectedEmotion == _emotions[index]
+                              ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                              : Colors.grey.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Text(
+                            _emotions[index],
+                            style: const TextStyle(fontSize: 28),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              '감정을 자유롭게 작성해주세요',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: TextField(
-                controller: _textController,
-                maxLines: null,
-                expands: true,
-                decoration: InputDecoration(
-                  hintText: '지금 느끼는 감정을 자유롭게 작성해주세요...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+              const SizedBox(height: 30),
+              const Text(
+                '감정을 자유롭게 작성해주세요',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _textController,
+                    maxLines: null,
+                    expands: true,
+                    decoration: InputDecoration(
+                      hintText: '지금 느끼는 감정을 자유롭게 작성해주세요...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _burnEmotion,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              const SizedBox(height: 30),
+              ScaleTransition(
+                scale: _scaleAnimation,
+                child: ElevatedButton(
+                  onPressed: _burnEmotion,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 4,
+                  ),
+                  child: const Text(
+                    '감정 버리기',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
-              child: const Text(
-                '감정 버리기',
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

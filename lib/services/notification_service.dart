@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  static Future<void> initialize(BuildContext context) async {
+  static Future<void> initialize() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initializationSettings = InitializationSettings(
@@ -25,14 +25,19 @@ class NotificationService {
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
-    await _notificationsPlugin.periodicallyShow(
-      0,
-      'EmotiBurn',
-      '지금 마음은 괜찮나요?',
-      RepeatInterval.hourly, // 1시간마다 알림
-      platformChannelSpecifics,
-      androidAllowWhileIdle: true,
-    );
+    
+    try {
+      await _notificationsPlugin.periodicallyShow(
+        0,
+        'EmotiBurn',
+        '지금 마음은 괜찮나요?',
+        RepeatInterval.hourly,
+        platformChannelSpecifics,
+        androidAllowWhileIdle: true,
+      );
+    } catch (e) {
+      debugPrint('알림 설정 실패: $e');
+    }
   }
 
   static Future<void> cancelAll() async {
