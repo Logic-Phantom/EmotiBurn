@@ -1,100 +1,85 @@
-# EmotiBurn
 
-EmotiBurn은 사용자의 감정 상태를 분석하고 이를 바탕으로 맞춤형 운동 추천을 제공하는 웹 애플리케이션입니다.
+# EmotiBurn - 감정의 해방을 위한 앱 컬렉션
 
-## 주요 기능
+EmotiBurn은 감정을 단순히 저장하거나 분석하는 것을 넘어, 감정과 진정으로 '작별'할 수 있도록 돕는 감성 기반 애플리케이션 시리즈입니다. 감정은 쌓아두기보다 흘려보내야 한다는 철학에서 출발했습니다.
 
-- 감정 상태 분석 및 기록
-- 맞춤형 운동 추천
-- 운동 일지 작성 및 관리
-- 운동 통계 및 분석
-- 커뮤니티 기능
+---
 
-## 기술 스택
+## 💡 1. 마음의 쓰레기통 - 감정 버리기 앱
 
-- Frontend: React.js
-- Backend: Node.js, Express.js
-- Database: MongoDB
-- AI/ML: TensorFlow.js (감정 분석)
-- Authentication: JWT
+### 📱 컨셉
+사람들은 불안, 분노, 슬픔 같은 감정을 말하지 못해 내면에 쌓아둡니다.  
+**이 앱은 '감정을 버리는 행위 자체'를 UX로 설계**하여, 해방감을 느끼도록 돕습니다.
 
-## 프로젝트 구조
+### ✨ 핵심 기능
+- 감정을 글로 작성한 후 **'버리기' 버튼으로 삭제**
+- 종이가 타거나 바람에 날리는 **감정 해방 애니메이션**
+- **감정은 저장되지 않음** → 오로지 버리는 목적
+- **푸시 알림**: "지금 마음은 괜찮나요?"
 
-```
-EmotiBurn/
-├── client/                 # Frontend React 애플리케이션
-│   ├── public/            # 정적 파일
-│   └── src/               # 소스 코드
-│       ├── components/    # React 컴포넌트
-│       ├── pages/        # 페이지 컴포넌트
-│       ├── services/     # API 서비스
-│       └── utils/        # 유틸리티 함수
-├── server/                # Backend 서버
-│   ├── config/           # 설정 파일
-│   ├── controllers/      # 컨트롤러
-│   ├── models/          # 데이터 모델
-│   ├── routes/          # API 라우트
-│   └── utils/           # 유틸리티 함수
-└── docs/                 # 문서
-```
+### 🔥 왜 새로운가?
+- 대부분의 앱은 감정을 **기록**하지만, 이 앱은 감정을 **버리는 것**에 집중
+- 감정 해소를 위한 UX 자체가 앱의 주 기능
+- **심리적 정화 경험을 설계한 최초의 UX 앱**
 
-## 시작하기
+---
 
-### 필수 요구사항
+## 💡 2. 사운드 북마크 - 청각 기반 기억 앱
 
-- Node.js (v14 이상)
-- MongoDB
-- npm 또는 yarn
+### 📱 컨셉
+사람들은 추억을 소리로 기억합니다.  
+이 앱은 **소리를 북마크**함으로써 감정이 깃든 순간을 저장할 수 있게 합니다.
 
-### 설치 및 실행
+### ✨ 핵심 기능
+- **위치 기반 사운드 태깅**
+- 짧은 순간 (5~10초)의 **음성 메모 녹음**
+- “그날의 소리” 타임라인
+- 감정 태그 붙이기: 🥲 😄 😡
 
-1. 저장소 클론
-```bash
-git clone https://github.com/yourusername/EmotiBurn.git
-cd EmotiBurn
-```
+### 🎧 활용 예시
+- “이 음악, 그때 걔랑 걷던 거리에서 들었었지...”
+- “엄마가 해준 조언, 잊고 싶지 않아”
 
-2. Frontend 의존성 설치 및 실행
-```bash
-cd client
-npm install
-npm start
-```
+---
 
-3. Backend 의존성 설치 및 실행
-```bash
-cd server
-npm install
-npm start
-```
+## 💡 3. Anti-Social 앱 - 진짜 혼자 있고 싶을 때
 
-## API 문서
+### 📱 컨셉
+디지털 디톡스를 원하지만 실천하기 어려운 사람들을 위한 **강제적 단절 앱**입니다.  
+외부 연결을 차단하고, **내면에 집중할 시간을 제공**합니다.
 
-API 문서는 `/docs/api.md`에서 확인할 수 있습니다.
+### ✨ 핵심 기능
+- **1시간/3시간/하루 모드**로 외부 차단 (알림 & 앱 제한)
+- 대체 활동 제공: 명상음악, 드로잉, 글쓰기 등
+- 디톡스 종료 후 **나만의 리포트** 제공
+- **친구 초대 챌린지 기능**으로 동기 부여
 
-## 기여하기
+---
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## 💡 4. AI 대화 리플렉션 – '내 말 되돌아보기'
 
-## 라이선스
+### 📱 컨셉
+우리가 한 말을 다시 듣고, 그 속의 **감정과 말투를 AI가 분석**해주는 앱입니다.  
+**대화의 거울**처럼 나 자신을 돌아볼 수 있게 도와줍니다.
 
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
+### ✨ 핵심 기능
+- 짧은 대화 녹음 → 텍스트 전환
+- **AI 분석**: 감정 분포 / 말투 / 핵심 키워드
+- “이 말투, 날카롭지 않았을까?” 등 반성 포인트 제공
 
-## 최근 변경사항 (2024-07)
+---
 
-- Flutter/Flame 기반 감정 버리기 앱으로 구조 전환
-- 한글 깨짐 현상 해결 (locale, supportedLocales, fontFamily, flutter_localizations 적용)
-- OpacityProvider 오류(Unsupported operation: Can only apply this effect to OpacityProvider) 완전 해결
-- Flame 1.28.x API 변화 대응 (Effect 완료 감지, 투명도 조절 등)
-- pubspec.yaml 의존성 최신화 (flame, intl 등)
-- 기타 빌드/런타임 호환성 개선
+## 🚀 앞으로의 비전
 
-## 연락처
+- Flutter & Flame 기반으로 **모바일 앱 개발**
+- 감정 해소를 위한 다양한 **인터랙션 & 애니메이션 연구**
+- 사용자 프라이버시 보호 최우선 (모든 감정 데이터는 로컬 삭제)
 
-프로젝트 관리자 - dlacoaud96@gmail.com
+---
 
-프로젝트 링크: [https://github.com/yourusername/EmotiBurn](https://github.com/yourusername/EmotiBurn) 
+## 📬 문의 및 제안
+
+- 관리자: dlacoaud96@gmail.com  
+- GitHub: [https://github.com/yourusername/EmotiBurn](https://github.com/yourusername/EmotiBurn)
+
+---
