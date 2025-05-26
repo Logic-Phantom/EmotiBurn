@@ -66,6 +66,9 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
   }
 
   void _burnEmotion() {
+    // 키패드가 올라가 있으면 먼저 포커스 해제
+    FocusScope.of(context).unfocus();
+    
     if (_textController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
