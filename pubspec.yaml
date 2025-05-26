@@ -30,5 +30,11 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/images/letter_bg.png
+    - assets/images/letter_bg0.png
+    - assets/images/letter_bg1.png
+    - assets/images/letter_bg2.png
+    - assets/images/letter_bg3.png
+    - assets/images/letter_bg4.png
+    - assets/images/letter_bg5.png
+    - assets/images/letter_bg6.png
     - assets/sounds/ 

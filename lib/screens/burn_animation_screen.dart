@@ -35,7 +35,6 @@ class BurnAnimationGame extends FlameGame {
   final VoidCallback onComplete;
   late SpriteComponent letterBg;
   late TextComponent contentText;
-  late LetterBurnMaskComponent burnMask;
   late List<FireParticleComponent> fireParticles;
   late List<AshParticleComponent> ashParticles;
   late List<FireEmojiComponent> fireEmojis;
@@ -48,6 +47,13 @@ class BurnAnimationGame extends FlameGame {
   String _message = "모든 감정은 잠시뿐, 당신은 더 강해질 거예요.";
   double _messageOpacity = 0.0;
   double _messageY = 0.0;
+  
+  // 불타는 이미지 관련 변수 추가
+  int _currentImageIndex = 0;
+  double _imageChangeTimer = 0.0;
+  static const double _imageChangeInterval = 0.5; // 이미지 변경 간격을 0.5초로 늘림
+  static const int _totalImages = 7; // letter_bg0 ~ letter_bg6
+  bool _isImageSequenceComplete = false; // 이미지 시퀀스 완료 여부
 
   BurnAnimationGame({
     required this.text,
@@ -58,15 +64,16 @@ class BurnAnimationGame extends FlameGame {
   Future<void> onLoad() async {
     await super.onLoad();
     
-    // 편지지 배경 (화면 중앙에 고정)
-    final bgSprite = await loadSprite('letter_bg.png');
+    // 초기 편지지 배경 (화면 중앙에 고정)
     final bgWidth = size.x;
     final bgHeight = size.y;
     final bgX = 0.0;
     final bgY = 0.0;
     
+    // 첫 번째 이미지 로드
+    final initialSprite = await loadSprite('letter_bg0.png');
     letterBg = SpriteComponent(
-      sprite: bgSprite,
+      sprite: initialSprite,
       position: Vector2(bgX, bgY),
       size: Vector2(bgWidth, bgHeight),
       anchor: Anchor.topLeft,
@@ -102,14 +109,6 @@ class BurnAnimationGame extends FlameGame {
       return emoji;
     });
 
-    // 타들어가는 마스킹 컴포넌트
-    burnMask = LetterBurnMaskComponent(
-      rect: Rect.fromLTWH(bgX, bgY, bgWidth, bgHeight),
-      getProgress: () => _burnProgress,
-      priority: 3,
-    );
-    add(burnMask);
-
     // 불꽃 파티클 효과
     fireParticles = List.generate(20, (index) {
       final x = bgX + random.nextDouble() * bgWidth;
@@ -143,29 +142,38 @@ class BurnAnimationGame extends FlameGame {
     }
 
     // 타들어가는 효과
-    if (_isFading && _burnProgress < 1.0) {
+    if (_isFading && !_isImageSequenceComplete) {
       _fadeOutTime += dt;
       _burnProgress = (_fadeOutTime / 2.0).clamp(0.0, 1.0);
       
-      if (_burnProgress >= 1.0 && !_ashStarted) {
-        _ashStarted = true;
-        // 재 파티클 생성
-        ashParticles = List.generate(30, (i) {
-          final x = letterBg.position.x + random.nextDouble() * letterBg.size.x;
-          final y = letterBg.position.y + letterBg.size.y;
-          final particle = AshParticleComponent(
-            position: Vector2(x, y),
-            gameSize: size,
-          );
-          add(particle);
-          return particle;
-        });
-        // 1초 후 메시지 표시
-        Future.delayed(const Duration(seconds: 1), () {
-          _showMessage = true;
-          _messageY = size.y / 2;
-          _messageOpacity = 0.0;
-        });
+      // 이미지 변경 타이머 업데이트
+      _imageChangeTimer += dt;
+      if (_imageChangeTimer >= _imageChangeInterval) {
+        _imageChangeTimer = 0.0;
+        if (_currentImageIndex < _totalImages - 1) {
+          _currentImageIndex++;
+          _updateLetterImage();
+        } else {
+          _isImageSequenceComplete = true;
+          _ashStarted = true;
+          // 재 파티클 생성
+          ashParticles = List.generate(30, (i) {
+            final x = letterBg.position.x + random.nextDouble() * letterBg.size.x;
+            final y = letterBg.position.y + letterBg.size.y;
+            final particle = AshParticleComponent(
+              position: Vector2(x, y),
+              gameSize: size,
+            );
+            add(particle);
+            return particle;
+          });
+          // 1초 후 메시지 표시
+          Future.delayed(const Duration(seconds: 1), () {
+            _showMessage = true;
+            _messageY = size.y / 2;
+            _messageOpacity = 0.0;
+          });
+        }
       }
     }
 
@@ -178,6 +186,12 @@ class BurnAnimationGame extends FlameGame {
         Future.delayed(const Duration(seconds: 2), onComplete);
       }
     }
+  }
+
+  // 이미지 업데이트 함수
+  Future<void> _updateLetterImage() async {
+    final newSprite = await loadSprite('letter_bg$_currentImageIndex.png');
+    letterBg.sprite = newSprite;
   }
 
   @override
