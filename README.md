@@ -84,8 +84,17 @@ API 문서는 `/docs/api.md`에서 확인할 수 있습니다.
 
 이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 `LICENSE` 파일을 참조하세요.
 
+## 최근 변경사항 (2024-07)
+
+- Flutter/Flame 기반 감정 버리기 앱으로 구조 전환
+- 한글 깨짐 현상 해결 (locale, supportedLocales, fontFamily, flutter_localizations 적용)
+- OpacityProvider 오류(Unsupported operation: Can only apply this effect to OpacityProvider) 완전 해결
+- Flame 1.28.x API 변화 대응 (Effect 완료 감지, 투명도 조절 등)
+- pubspec.yaml 의존성 최신화 (flame, intl 등)
+- 기타 빌드/런타임 호환성 개선
+
 ## 연락처
 
-프로젝트 관리자 - [이메일 주소]
+프로젝트 관리자 - dlacoaud96@gmail.com
 
 프로젝트 링크: [https://github.com/yourusername/EmotiBurn](https://github.com/yourusername/EmotiBurn) 

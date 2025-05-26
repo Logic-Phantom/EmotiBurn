@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'burn_animation_screen.dart';
+import 'dart:async';
 
 class WriteEmotionScreen extends StatefulWidget {
   const WriteEmotionScreen({super.key});
@@ -13,12 +14,15 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
   String _selectedEmotion = '😢';
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
+  Timer? _timer;
+  int _remainingSeconds = 180; // 3 minutes
 
   final List<String> _emotions = [
     '😢', // 슬픔
     '😡', // 분노
     '😰', // 불안
     '😔', // 우울
+    '😣', '😭', '😩', '😞'
   ];
 
   @override
@@ -31,12 +35,33 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingSeconds > 0) {
+          _remainingSeconds--;
+        } else {
+          _timer?.cancel();
+          _burnEmotion();
+        }
+      });
+    });
+  }
+
+  String _formatTime() {
+    final minutes = (_remainingSeconds / 60).floor();
+    final seconds = _remainingSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   @override
   void dispose() {
     _textController.dispose();
     _animationController.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -57,7 +82,6 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
         context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => BurnAnimationScreen(
-            emotion: _selectedEmotion,
             text: _textController.text,
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -74,15 +98,33 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: const Color(0xFFF3EAFB), // 연보라색 배경
       appBar: AppBar(
-        title: const Text('감정 버리기'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
+        elevation: 0,
+        title: const Text('지금 어떤 감정이 드나요?'),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Center(
+              child: Text(
+                _formatTime(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-      body: SafeArea(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           child: Padding(
@@ -90,30 +132,23 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  '지금 어떤 감정이 드나요?',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Container(
-                  height: 120,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withOpacity(0.07),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
                     ],
                   ),
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
                   child: GridView.builder(
-                    padding: const EdgeInsets.all(8),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 4,
                       childAspectRatio: 1,
@@ -132,14 +167,14 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
                           duration: const Duration(milliseconds: 200),
                           decoration: BoxDecoration(
                             color: _selectedEmotion == _emotions[index]
-                                ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
-                                : Colors.grey.withOpacity(0.1),
+                                ? theme.colorScheme.primary.withOpacity(0.15)
+                                : Colors.grey.withOpacity(0.08),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Center(
                             child: Text(
                               _emotions[index],
-                              style: const TextStyle(fontSize: 28),
+                              style: const TextStyle(fontSize: 32),
                             ),
                           ),
                         ),
@@ -147,53 +182,51 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
                     },
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 32),
                 const Text(
                   '감정을 자유롭게 작성해주세요',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 12),
-                SizedBox(
-                  height: 120,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: _textController,
-                      maxLines: null,
-                      expands: true,
-                      decoration: InputDecoration(
-                        hintText: '지금 느끼는 감정을 자유롭게 작성해주세요...',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.all(16),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.07),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _textController,
+                    maxLines: null,
+                    minLines: 3,
+                    decoration: InputDecoration(
+                      hintText: '지금 느끼는 감정을 자유롭게 작성해주세요...'
+                          ,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.all(20),
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 32),
                 ScaleTransition(
                   scale: _scaleAnimation,
                   child: ElevatedButton(
                     onPressed: _burnEmotion,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      backgroundColor: theme.colorScheme.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -209,6 +242,7 @@ class _WriteEmotionScreenState extends State<WriteEmotionScreen> with SingleTick
                     ),
                   ),
                 ),
+                const SizedBox(height: 32),
               ],
             ),
           ),
