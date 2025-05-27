@@ -47,6 +47,7 @@ class BurnAnimationGame extends FlameGame {
   String _message = "모든 감정은 잠시뿐, 당신은 더 강해질 거예요.";
   double _messageOpacity = 0.0;
   double _messageY = 0.0;
+  bool _isFadingOut = false;  // 페이드 아웃 상태를 추적하는 변수 추가
   
   // 불타는 이미지 관련 변수 추가
   int _currentImageIndex = 0;
@@ -179,11 +180,21 @@ class BurnAnimationGame extends FlameGame {
 
     // 메시지 애니메이션
     if (_showMessage) {
-      _messageOpacity += dt;
-      if (_messageOpacity >= 1.0) {
-        _messageOpacity = 1.0;
-        // 2초 후 홈으로 이동
-        Future.delayed(const Duration(seconds: 2), onComplete);
+      if (!_isFadingOut) {
+        _messageOpacity += dt;
+        if (_messageOpacity >= 1.0) {
+          _messageOpacity = 1.0;
+          // 2초 후 페이드 아웃 시작
+          Future.delayed(const Duration(seconds: 2), () {
+            _isFadingOut = true;
+          });
+        }
+      } else {
+        _messageOpacity -= dt * 0.5;  // 페이드 아웃 속도 조절
+        if (_messageOpacity <= 0.0) {
+          _messageOpacity = 0.0;
+          onComplete();  // 페이드 아웃이 완료되면 홈으로 이동
+        }
       }
     }
   }
