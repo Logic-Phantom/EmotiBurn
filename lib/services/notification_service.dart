@@ -1,16 +1,28 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
+    // 타임존 초기화
+    tz.initializeTimeZones();
+    
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
-    await _notificationsPlugin.initialize(initializationSettings);
+    
+    await _notificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) async {
+        // 알림 탭했을 때의 동작
+        debugPrint('알림이 탭되었습니다: ${response.payload}');
+      },
+    );
   }
 
   static Future<void> showPeriodicNotification() async {
@@ -21,12 +33,18 @@ class NotificationService {
       channelDescription: '정기적으로 마음 상태를 체크하는 알림',
       importance: Importance.max,
       priority: Priority.high,
-      showWhen: false,
+      showWhen: true,
+      enableVibration: true,
+      playSound: true,
     );
     const NotificationDetails platformChannelSpecifics =
         NotificationDetails(android: androidPlatformChannelSpecifics);
     
     try {
+      // 기존 알림 취소
+      await _notificationsPlugin.cancelAll();
+      
+      // 새로운 주기적 알림 설정
       await _notificationsPlugin.periodicallyShow(
         0,
         'EmotiBurn',
@@ -35,6 +53,7 @@ class NotificationService {
         platformChannelSpecifics,
         androidAllowWhileIdle: true,
       );
+      debugPrint('주기적 알림이 성공적으로 설정되었습니다.');
     } catch (e) {
       debugPrint('알림 설정 실패: $e');
     }
