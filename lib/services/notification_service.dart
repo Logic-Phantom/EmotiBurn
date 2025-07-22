@@ -51,7 +51,7 @@ class NotificationService {
         '지금 마음은 괜찮나요?',
         RepeatInterval.hourly,
         platformChannelSpecifics,
-        androidAllowWhileIdle: true,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
       debugPrint('주기적 알림이 성공적으로 설정되었습니다.');
     } catch (e) {
